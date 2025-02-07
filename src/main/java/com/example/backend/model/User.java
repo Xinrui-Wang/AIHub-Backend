@@ -3,9 +3,11 @@ package com.example.backend.model;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.example.backend.config.TableNames;
+
 import java.time.LocalDateTime;
 
-@TableName("user_accounts") // 映射到数据库中的 user_accounts 表
+@TableName(TableNames.USER) // 映射到数据库中的 user_accounts 表
 public class User {
 
     @TableId(type = IdType.AUTO) // 自动生成的主键
