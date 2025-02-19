@@ -77,4 +77,17 @@ public class User {
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", nickname='" + nickname + '\'' +
+                ", userEmail='" + userEmail + '\'' +
+                ", userPhoneNumber='" + userPhoneNumber + '\'' +
+                ", passwordHash='" + passwordHash + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
 }

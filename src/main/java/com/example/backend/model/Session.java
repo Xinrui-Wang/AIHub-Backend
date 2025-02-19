@@ -5,14 +5,15 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.example.backend.config.TableNames;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @TableName(TableNames.SESSION) // 映射到 all_user_chat_sessions 表
 public class Session {
 
     @TableId  // 主键字段
-    private Long sessionId;  // 会话 ID
+    private String sessionId;  // 会话 ID（UUID 类型）
 
-    private Long userId;  // 用户 ID
+    private Long userId;  // 用户 ID（保持 Long）
 
     private String sessionName;  // 会话名称
 
@@ -25,11 +26,11 @@ public class Session {
     private String lastMessage;  // 最后一个消息
 
     // getter 和 setter 方法
-    public Long getSessionId() {
+    public String getSessionId() {
         return sessionId;
     }
 
-    public void setSessionId(Long sessionId) {
+    public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
 
