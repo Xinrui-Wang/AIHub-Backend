@@ -25,12 +25,51 @@ public class SessionService {
         this.messageMapper = messageMapper;
     }
 
+    /**
+     * 删除指定用户的会话（包括关联消息）
+     * @param userId 用户ID
+     * @param sessionId 会话ID
+     * @return 是否删除成功
+     */
+    @Transactional
+    public boolean deleteSession(Long userId, UUID sessionId) {
+        try {
+            // 1. 验证会话所有权
+            Session session = sessionMapper.findSessionById(sessionId.toString());
+            if (session == null || !session.getUserId().equals(userId)) {
+                log.warning("Session not found or permission denied. UserId: " + userId + ", SessionId: " + sessionId);
+                return false;
+            }
+
+            // 2. 删除关联消息（先删从表）
+            int deletedMessages = messageMapper.deleteBySessionId(sessionId);
+            log.info("Deleted " + deletedMessages + " messages for session: " + sessionId);
+
+            // 3. 删除会话（主表）
+            int deletedSessions = sessionMapper.deleteById(sessionId.toString());
+            if (deletedSessions == 0) {
+                log.warning("No session deleted for: " + sessionId);
+                return false;
+            }
+
+            log.info("Successfully deleted session: " + sessionId);
+            return true;
+
+        } catch (Exception e) {
+            log.severe("Error deleting session: " + sessionId + ". Error: " + e.getMessage());
+            throw new RuntimeException("Failed to delete session", e);
+        }
+    }
+
+
     // 根据用户ID获取会话列表
+    @Transactional(readOnly = true)
     public List<Session> getSessionsByUserId(Long userId, int limit) {
         return sessionMapper.findSessionsByUserId(userId, limit);
     }
 
     // 获取指定 session_id 的所有消息
+    @Transactional(readOnly = true)
     public List<Message> getMessagesBySessionId(UUID sessionId) {
         return messageMapper.findMessagesBySessionId(sessionId);
     }

@@ -8,9 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/sessions")
@@ -22,6 +24,30 @@ public class SessionController {
 
     public SessionController(SessionService sessionService) {
         this.sessionService = sessionService;
+    }
+
+
+    // 删除会话接口（新增）
+    @DeleteMapping("/{session_id}/delete")
+    public ResponseEntity<?> deleteSession(
+            @PathVariable("session_id") UUID sessionId,
+            @RequestParam("user_id") Long userId) {
+
+        logger.info("Deleting session: userId={}, sessionId={}", userId, sessionId);
+
+        try {
+            boolean isDeleted = sessionService.deleteSession(userId, sessionId);
+            if (isDeleted) {
+                return ResponseEntity.ok().build();
+            } else {
+                logger.warn("Session not found or permission denied");
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            logger.error("Error deleting session: {}", sessionId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("message", "Failed to delete session"));
+        }
     }
 
     // 获取会话列表
